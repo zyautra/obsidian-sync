@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/mysql-client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_DATABASE_URL")
+}
+
+model Vault {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  devices   Device[]
+  files     File[]
+  locks     FileLock[]
+  syncOps   SyncOperation[]
+}
+
+model Device {
+  id         String   @id @default(uuid())
+  vaultId    String
+  deviceName String
+  deviceId   String   @unique
+  lastSeen   DateTime @default(now())
+  isOnline   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  vault      Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  locks      FileLock[]
+  syncOps    SyncOperation[]
+
+  @@index([vaultId])
+}
+
+model File {
+  id         String   @id @default(uuid())
+  vaultId    String
+  path       String
+  hash       String
+  size       Int
+  mtime      DateTime
+  version    Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  vault      Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  locks      FileLock[]
+  operations FileOperation[]
+
+  @@unique([vaultId, path])
+  @@index([vaultId])
+  @@index([hash])
+}
+
+model FileLock {
+  id        String   @id @default(uuid())
+  vaultId   String
+  fileId    String
+  deviceId  String
+  lockedAt  DateTime @default(now())
+  expiresAt DateTime
+  vault     Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  file      File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@unique([fileId])
+  @@index([vaultId])
+  @@index([deviceId])
+  @@index([expiresAt])
+}
+
+model SyncOperation {
+  id            String   @id @default(uuid())
+  vaultId       String
+  deviceId      String
+  operationType String
+  filePath      String
+  previousHash  String?
+  newHash       String?
+  diff          Json?
+  timestamp     DateTime @default(now())
+  status        String   @default("pending")
+  vault         Vault    @relation(fields: [vaultId], references: [id], onDelete: Cascade)
+  device        Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([vaultId, timestamp])
+  @@index([deviceId])
+  @@index([status])
+}
+
+model FileOperation {
+  id        String   @id @default(uuid())
+  fileId    String
+  operation Json
+  deviceId  String
+  sequence  Int
+  timestamp DateTime @default(now())
+  file      File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([fileId, sequence])
+  @@index([timestamp])
+}

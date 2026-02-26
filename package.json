@@ -1,0 +1,13 @@
+{
+  "name": "obsidian-sync-monorepo",
+  "private": true,
+  "workspaces": [
+    "obsidian-auto-sync-plugin",
+    "obsidian-sync-server"
+  ],
+  "scripts": {
+    "install:all": "npm install --workspaces",
+    "build:all": "npm run build --workspaces --if-present",
+    "test:all": "npm run test --workspaces --if-present"
+  }
+}

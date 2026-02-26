@@ -1,0 +1,11 @@
+{
+  "id": "obsidian-auto-sync",
+  "name": "Auto Sync",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Real-time vault synchronization across multiple devices",
+  "author": "qhtjd907",
+  "authorUrl": "https://github.com/qhtjd907/obsidian-auto-sync-plugin",
+  "fundingUrl": "https://buymeacoffee.com",
+  "isDesktopOnly": false
+}
