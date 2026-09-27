@@ -1,5 +1,15 @@
 # Obsidian Sync Workspace
 
+> [!WARNING]
+> **Archived — superseded by VaultDatum.**
+> This was the first version of my self-hosted Obsidian sync. It relayed file
+> events over WebSocket without a defined authoritative state, which led to
+> attachment corruption and server storage drifting from database metadata.
+> It has been redesigned from a written specification as **VaultDatum**
+> (server-authoritative revisions, conflict preservation, tombstones,
+> idempotent retries, and crash recovery). This repository is kept for
+> reference only and is no longer maintained.
+
 This repository contains two related projects for Obsidian synchronization:
 
 - `obsidian-auto-sync-plugin`: Obsidian plugin that watches vault file changes and syncs over WebSocket.
